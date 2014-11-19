@@ -1,0 +1,21 @@
+facebook:
+    appID: 268968236645689
+    appSecret: ebac8cc9395917874199dce6a67fbc68
+
+vaadin:
+    servlet:
+    urlMapping: /ui/*
+
+http:
+    proxy:
+        host: indra.proxy.es
+        port: 8080
+        username: fjroa
+        password: 54SzVrU3
+        
+---
+spring:
+    profiles: cloud
+    data:
+         mongodb:
+            uri: mongodb://127.0.0.1/test
