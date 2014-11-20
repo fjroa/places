@@ -14,6 +14,11 @@ import org.springframework.social.facebook.api.Page;
 
 public class Place implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	private String id;
 	

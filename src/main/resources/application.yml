@@ -1,5 +1,5 @@
 facebook:
-    appID: 268968236645689
+    appId: 268968236645689
     appSecret: ebac8cc9395917874199dce6a67fbc68
 
 vaadin:
@@ -8,7 +8,7 @@ vaadin:
 
 http:
     proxy:
-        host: indra.proxy.es
+        host: proxy
         port: 8080
         username: fjroa
         password: 54SzVrU3

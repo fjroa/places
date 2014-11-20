@@ -3,6 +3,7 @@ package places;
 import java.util.Arrays;
 import java.util.Map;
 
+import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
@@ -34,13 +36,24 @@ public class Application {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Bean
-	Facebook facebook(@Value("${facebook.appID}") String appId,
-			@Value("${facebook.appSecret}") String appSecret) {
-		return new FacebookTemplate(appId + " | " + appSecret);
+	Facebook facebook(@Value("${facebook.appId}") String appId,
+			@Value("${facebook.appSecret}") String appSecret,
+			RestTemplate restTemplate) {
+		String result = restTemplate
+				.getForObject(
+						"https://graph.facebook.com/oauth/access_token?grant_type=client_credentials&client_id="
+								+ appId + "&client_secret=" + appSecret,
+						String.class);
+		String accessToken = result.replaceAll("access_token=", "");
+
+		FacebookTemplate facebookTemplate = new FacebookTemplate(accessToken);
+		facebookTemplate.setRequestFactory(restTemplate.getRequestFactory());
+		return facebookTemplate;
 	}
 
 	@Bean
-	RestTemplate restTemplate(@Value("${http.proxy.host}") String host,
+	ClientHttpRequestFactory requestFactory(
+			@Value("${http.proxy.host}") String host,
 			@Value("${http.proxy.port}") Integer port,
 			@Value("${http.proxy.username}") String username,
 			@Value("${http.proxy.password}") String password) {
@@ -48,9 +61,14 @@ public class Application {
 		credsProvider.setCredentials(new AuthScope(host, port),
 				new UsernamePasswordCredentials(username, password));
 		HttpClient httpClient = HttpClients.custom()
-				.setDefaultCredentialsProvider(credsProvider).build();
-		return new RestTemplate(new HttpComponentsClientHttpRequestFactory(
-				httpClient));
+				.setDefaultCredentialsProvider(credsProvider)
+				.setProxy(new HttpHost(host, port)).build();
+		return new HttpComponentsClientHttpRequestFactory(httpClient);
+	}
+
+	@Bean
+	RestTemplate restTemplate(ClientHttpRequestFactory requestFactory) {
+		return new RestTemplate(requestFactory);
 	}
 
 	@Bean

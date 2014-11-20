@@ -40,6 +40,10 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>springloaded</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
@@ -137,6 +141,7 @@
 					<compileReport>false</compileReport>
 					<style>OBF</style>
 					<strict>true</strict>
+					
 					<!-- Symbol maps etc, not needed in vaadin app, just target the outside 
 						war -->
 					<deploy>${project.build.directory}/gwt-deploy</deploy>
